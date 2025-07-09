@@ -1,0 +1,132 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "atom.fullname" . }}-db-init
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: db-init
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "atom.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: db-init
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "atom.serviceAccountName" . }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext:
+        {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: db-init
+          image: {{ include "atom.image" . }}
+          imagePullPolicy: {{ .Values.atom.image.pullPolicy }}
+          command: ["php"]
+          args: ["-d", "memory_limit=-1", "symfony", "tools:purge", "--demo"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "atom.fullname" . }}-config
+            - secretRef:
+                name: {{ include "atom.mysql.fullname" . }}-secret
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: uploads
+              mountPath: /atom/src/uploads
+            - name: cache
+              mountPath: /atom/src/cache
+          {{- if .Values.securityContext.enabled }}
+          securityContext:
+            {{- omit .Values.securityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-uploads-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-cache-pvc
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "atom.fullname" . }}-assets-build
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: assets-build
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "atom.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: assets-build
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "atom.serviceAccountName" . }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext:
+        {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: assets-build
+          image: {{ include "atom.image" . }}
+          imagePullPolicy: {{ .Values.atom.image.pullPolicy }}
+          command: ["/bin/sh"]
+          args: 
+            - -c
+            - |
+              npm install
+              npm run build
+              make -C plugins/arDominionPlugin
+          envFrom:
+            - configMapRef:
+                name: {{ include "atom.fullname" . }}-config
+            - secretRef:
+                name: {{ include "atom.mysql.fullname" . }}-secret
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: uploads
+              mountPath: /atom/src/uploads
+            - name: cache
+              mountPath: /atom/src/cache
+          {{- if .Values.securityContext.enabled }}
+          securityContext:
+            {{- omit .Values.securityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-uploads-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-cache-pvc

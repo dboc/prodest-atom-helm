@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: atom
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    {{- include "atom.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: atom
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.nginx.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  type: {{ .Values.nginx.service.type }}
+  ports:
+    - port: {{ .Values.nginx.service.port }}
+      targetPort: {{ .Values.nginx.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "atom.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.mysql.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  type: {{ .Values.mysql.service.type }}
+  ports:
+    - port: {{ .Values.mysql.service.port }}
+      targetPort: {{ .Values.mysql.service.targetPort }}
+      protocol: TCP
+      name: mysql
+  selector:
+    {{- include "atom.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.memcached.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memcached
+spec:
+  type: {{ .Values.memcached.service.type }}
+  ports:
+    - port: {{ .Values.memcached.service.port }}
+      targetPort: {{ .Values.memcached.service.targetPort }}
+      protocol: TCP
+      name: memcached
+  selector:
+    {{- include "atom.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: memcached
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.gearman.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gearman
+spec:
+  type: {{ .Values.gearman.service.type }}
+  ports:
+    - port: {{ .Values.gearman.service.port }}
+      targetPort: {{ .Values.gearman.service.targetPort }}
+      protocol: TCP
+      name: gearman
+  selector:
+    {{- include "atom.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: gearman

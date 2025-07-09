@@ -1,0 +1,42 @@
+1. Get the application URL by running these commands:
+{{- if .Values.nginx.route.enabled }}
+  https://{{ include "atom.route.host" . }}
+{{- else }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "atom.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=nginx" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+2. Default login credentials:
+   - Username: demo@example.com
+   - Password: demo
+
+3. To check the status of the application:
+   kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+4. To view the logs:
+   kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=atom
+
+5. To access the database:
+   kubectl exec -it -n {{ .Release.Namespace }} deployment/{{ include "atom.mysql.fullname" . }} -- mysql -u {{ .Values.mysql.auth.username }} -p{{ .Values.mysql.auth.password }} {{ .Values.mysql.auth.database }}
+
+6. Application components deployed:
+   - AtoM Application ({{ .Values.atom.replicaCount }} replicas)
+   - AtoM Worker ({{ .Values.atomWorker.replicaCount }} replicas)
+   - Nginx ({{ .Values.nginx.replicaCount }} replicas)
+   - MySQL/Percona ({{ .Values.mysql.replicaCount }} replicas)
+   - Memcached ({{ .Values.memcached.replicaCount }} replicas)
+   - Gearman ({{ .Values.gearman.replicaCount }} replicas)
+
+7. External dependencies:
+   - Elasticsearch: {{ .Values.atom.env.elasticsearchHost }}:{{ .Values.atom.env.elasticsearchPort }}
+
+{{- if .Values.mysql.persistence.enabled }}
+8. Persistent storage:
+   - MySQL data: {{ .Values.mysql.persistence.size }}
+   - Application uploads: 10Gi
+   - Application cache: 5Gi
+{{- end }}
+
+For more information about AtoM, visit: https://www.accesstomemory.org/

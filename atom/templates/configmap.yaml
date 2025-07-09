@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "atom.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: config
+data:
+  ATOM_DEVELOPMENT_MODE: {{ .Values.atom.env.developmentMode | quote }}
+  ATOM_ELASTICSEARCH_HOST: {{ .Values.atom.env.elasticsearchHost | quote }}
+  ATOM_ELASTICSEARCH_PORT: {{ .Values.atom.env.elasticsearchPort | quote }}
+  ATOM_ELASTICSEARCH_PROTOCOL: {{ .Values.atom.env.elasticsearchProtocol | quote }}
+  ATOM_MEMCACHED_HOST: {{ include "atom.memcached.fullname" . | quote }}
+  ATOM_GEARMAND_HOST: {{ include "atom.gearman.fullname" . | quote }}
+  ATOM_MYSQL_DSN: {{ include "atom.mysql.dsn" . | quote }}
+  ATOM_MYSQL_USERNAME: {{ .Values.mysql.auth.username | quote }}
+  NODE_ENV: "production"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "atom.nginx.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+    
+    events {
+      worker_connections 1024;
+    }
+    
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+      
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+      
+      access_log /var/log/nginx/access.log main;
+      sendfile on;
+      keepalive_timeout 65;
+      gzip on;
+      
+      upstream atom {
+        server {{ include "atom.fullname" . }}:9000;
+      }
+      
+      server {
+        listen 80;
+        root /atom/src;
+        server_name _;
+        client_max_body_size 72M;
+        
+        location / {
+          try_files $uri /index.php?$args;
+        }
+        
+        location ~ /\. {
+          deny all;
+          return 404;
+        }
+        
+        location ~* (\.yml|\.ini|\.tmpl)$ {
+          deny all;
+          return 404;
+        }
+        
+        location ~* /(?:uploads|files)/.*\.php$ {
+          deny all;
+          return 404;
+        }
+        
+        location ~* /uploads/r/(.*)/conf/ { }
+        
+        location ~* ^/uploads/r/(.*)$ {
+          include /etc/nginx/fastcgi_params;
+          set $index /index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$index;
+          fastcgi_param SCRIPT_NAME $index;
+          fastcgi_pass atom;
+        }
+        
+        location ~ ^/private/(.*)$ {
+          internal;
+          alias /atom/src/$1;
+        }
+        
+        location ~ ^/(index|qubit_dev)\.php(/|$) {
+          include /etc/nginx/fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_split_path_info ^(.+\.php)(/.*)$;
+          fastcgi_pass atom;
+        }
+        
+        location ~* \.php$ {
+          deny all;
+          return 404;
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "atom.mysql.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+data:
+  mysqld.cnf: |
+    [mysqld]
+    default-storage-engine = InnoDB
+    collation-server = utf8mb4_unicode_ci
+    character-set-server = utf8mb4
+    max_allowed_packet = 128M
+    sql_mode = ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    optimizer_switch = block_nested_loop=off
+    innodb_buffer_pool_size = 512M
+    innodb_log_file_size = 64M
+    innodb_flush_log_at_trx_commit = 2
+    innodb_flush_method = O_DIRECT

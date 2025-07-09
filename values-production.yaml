@@ -1,0 +1,149 @@
+# Production values for atom chart
+# This file contains production-ready values for the AtoM application
+
+global:
+  domain: "k8s-npr.es.gov.br"
+  imageRegistry: "registry.redhat.io"
+  storageClass: "ocs-storagecluster-ceph-rbd"
+  imagePullSecrets:
+    - name: registry-secret
+
+# AtoM application configuration
+atom:
+  replicaCount: 3
+  
+  image:
+    repository: "atom"
+    pullPolicy: Always
+    tag: "2.9.0"
+  
+  env:
+    developmentMode: "off"
+    elasticsearchHost: "elasticsearch.elastic.svc.cluster.local"
+    elasticsearchPort: "9200"
+    elasticsearchProtocol: "https"
+    
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+
+# AtoM worker configuration
+atomWorker:
+  replicaCount: 5
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+# Nginx configuration
+nginx:
+  replicaCount: 2
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+  
+  route:
+    host: "atom-prod"
+
+# MySQL configuration
+mysql:
+  replicaCount: 1
+  
+  auth:
+    rootPassword: "secure-root-password-change-me"
+    password: "secure-atom-password-change-me"
+    
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+    requests:
+      cpu: 2000m
+      memory: 4Gi
+  
+  persistence:
+    enabled: true
+    size: 100Gi
+
+# Memcached configuration
+memcached:
+  replicaCount: 2
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+# Gearman configuration
+gearman:
+  replicaCount: 2
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+# Security context for production
+securityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+# Pod security context
+podSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+# Resource quotas and limits
+nodeSelector:
+  node-role.kubernetes.io/worker: ""
+
+# Tolerations for specific nodes
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "atom"
+    effect: "NoSchedule"
+
+# Affinity rules for high availability
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - atom
+          topologyKey: kubernetes.io/hostname
+
+# OpenShift specific configurations
+openshift:
+  enabled: true
+  scc:
+    enabled: true
+    name: "restricted"

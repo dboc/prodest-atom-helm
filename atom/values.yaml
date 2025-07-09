@@ -1,0 +1,251 @@
+# Default values for atom.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  # Domain for routes
+  domain: "k8s-npr.es.gov.br"
+  # Image registry
+  imageRegistry: ""
+  # Image pull secrets
+  imagePullSecrets: []
+  # Storage class for persistent volumes
+  storageClass: ""
+
+# AtoM application configuration
+atom:
+  # Number of replicas
+  replicaCount: 1
+  
+  image:
+    repository: atom
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  
+  # Environment variables
+  env:
+    developmentMode: "off"
+    # Elasticsearch configuration (external)
+    elasticsearchHost: "elasticsearch.external.example.com"
+    elasticsearchPort: "9200"
+    elasticsearchProtocol: "https"
+    
+  # Resource limits
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  
+  # Liveness and readiness probes
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+
+# AtoM worker configuration
+atomWorker:
+  # Number of replicas
+  replicaCount: 2
+  
+  image:
+    repository: atom
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  
+  # Environment variables
+  env:
+    developmentMode: "off"
+    # Elasticsearch configuration (external)
+    elasticsearchHost: "elasticsearch.external.example.com"
+    elasticsearchPort: "9200"
+    elasticsearchProtocol: "https"
+    
+  # Resource limits
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  
+  # Auto-restart on failure
+  restartPolicy: "Always"
+
+# Nginx configuration
+nginx:
+  # Number of replicas
+  replicaCount: 1
+  
+  image:
+    repository: nginx
+    pullPolicy: IfNotPresent
+    tag: "latest"
+    
+  # Resource limits
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+    
+  # Route configuration
+  route:
+    enabled: true
+    host: "atom"
+    tls:
+      enabled: true
+      termination: "edge"
+
+# MySQL/Percona configuration
+mysql:
+  # Number of replicas
+  replicaCount: 1
+  
+  image:
+    repository: percona
+    pullPolicy: IfNotPresent
+    tag: "8.0"
+  
+  # Database configuration
+  auth:
+    rootPassword: "my-secret-pw"
+    database: "atom"
+    username: "atom"
+    password: "atom_12345"
+    
+  # Resource limits
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  
+  # Persistence configuration
+  persistence:
+    enabled: true
+    size: 10Gi
+    accessModes:
+      - ReadWriteOnce
+    
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 3306
+    targetPort: 3306
+
+# Memcached configuration
+memcached:
+  # Number of replicas
+  replicaCount: 1
+  
+  image:
+    repository: memcached
+    pullPolicy: IfNotPresent
+    tag: "latest"
+    
+  # Resource limits
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 11211
+    targetPort: 11211
+
+# Gearman configuration
+gearman:
+  # Number of replicas
+  replicaCount: 1
+  
+  image:
+    repository: artefactual/gearmand
+    pullPolicy: IfNotPresent
+    tag: "latest"
+    
+  # Resource limits
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 4730
+    targetPort: 4730
+
+# Security context
+securityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Service account
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Pod security context
+podSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# OpenShift specific configurations
+openshift:
+  # Enable OpenShift specific features
+  enabled: true
+  # Security context constraints
+  scc:
+    enabled: true
+    name: "restricted"

@@ -1,0 +1,20 @@
+apiVersion: v2
+name: atom
+description: AtoM (Access to Memory) is a web-based, open source application for standards-based archival description and access in a multilingual, multi-repository environment.
+type: application
+version: 0.1.0
+appVersion: "2.9.0"
+home: https://www.accesstomemory.org/
+sources:
+  - https://github.com/artefactual/atom
+keywords:
+  - atom
+  - archival
+  - memory
+  - cultural-heritage
+  - museum
+  - archive
+maintainers:
+  - name: AtoM Team
+    email: info@artefactual.com
+    url: https://www.artefactual.com/

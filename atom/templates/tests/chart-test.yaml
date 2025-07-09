@@ -1,0 +1,74 @@
+suite: test atom chart
+templates:
+  - configmap.yaml
+  - deployment-atom.yaml
+  - deployment-nginx.yaml
+  - deployment-mysql.yaml
+  - deployment-memcached.yaml
+  - deployment-gearman.yaml
+  - deployment-worker.yaml
+  - service.yaml
+  - route.yaml
+  - pvc.yaml
+  - secret.yaml
+  - serviceaccount.yaml
+  - job-init.yaml
+tests:
+  - it: should render all templates
+    asserts:
+      - isKind:
+          of: ConfigMap
+        template: configmap.yaml
+      - isKind:
+          of: Deployment
+        template: deployment-atom.yaml
+      - isKind:
+          of: Service
+        template: service.yaml
+      - isKind:
+          of: Route
+        template: route.yaml
+      - isKind:
+          of: PersistentVolumeClaim
+        template: pvc.yaml
+      - isKind:
+          of: Secret
+        template: secret.yaml
+      - isKind:
+          of: ServiceAccount
+        template: serviceaccount.yaml
+      - isKind:
+          of: Job
+        template: job-init.yaml
+
+  - it: should have correct labels
+    templates:
+      - deployment-atom.yaml
+      - deployment-nginx.yaml
+      - service.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: atom
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: RELEASE-NAME
+
+  - it: should have correct route host
+    template: route.yaml
+    asserts:
+      - equal:
+          path: spec.host
+          value: atom.k8s-npr.es.gov.br
+
+  - it: should have correct mysql config
+    template: secret.yaml
+    asserts:
+      - equal:
+          path: data.MYSQL_DATABASE
+          value: YXRvbQ==  # base64 encoded 'atom'
+      - equal:
+          path: data.MYSQL_USER
+          value: YXRvbQ==  # base64 encoded 'atom'
