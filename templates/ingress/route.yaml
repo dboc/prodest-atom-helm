@@ -1,0 +1,24 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "atom.fullname" . }}-route
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "atom") | nindent 4 }}
+spec:
+  host: {{ .Values.route.hostname }}
+  to:
+    kind: Service
+    name: {{ include "atom.component.fullname" (list . "atom") }}
+    weight: 100
+  port:
+    targetPort: http
+  {{- if .Values.route.tls }}
+  tls:
+    termination: edge
+    # Optional: specify insecureEdgeTerminationPolicy if needed
+    # insecureEdgeTerminationPolicy: Redirect
+  {{- end }}
+  wildcardPolicy: None
+{{- end }}

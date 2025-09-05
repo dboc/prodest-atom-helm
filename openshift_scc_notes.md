@@ -1,0 +1,32 @@
+# Notas sobre Security Context Constraints (SCCs) do OpenShift
+
+- SCCs controlam permissões para pods no OpenShift (similar ao RBAC para usuários).
+- Definem condições que um pod deve cumprir para ser aceito (e.g., usuário, privilégios, volumes, SELinux).
+- OpenShift é mais restritivo que Kubernetes padrão; por padrão, pods rodam com UIDs alocados ao namespace e contexto SELinux específico.
+- **SCCs Padrão Importantes:**
+    - `restricted`: Mais restritiva, padrão para usuários autenticados. Nega acesso a recursos do host, exige UID e contexto SELinux alocados ao namespace.
+    - `nonroot`: Similar à `restricted`, mas permite rodar com qualquer UID não-root.
+    - `anyuid`: Similar à `restricted`, mas permite rodar com qualquer UID e GID.
+    - `privileged`: Menos restritiva, permite acesso total ao host. Usar com extrema cautela, geralmente para administração do cluster.
+    - Outras: `hostaccess`, `hostmount-anyuid`, `hostnetwork` (permitem acesso a recursos específicos do host, usar com cautela).
+- **Boas Práticas:**
+    - **Não modificar SCCs padrão.** Criar SCCs customizadas se necessário.
+    - Evitar a SCC `privileged` sempre que possível.
+    - Tentar usar `restricted`, `nonroot` ou `anyuid`.
+    - Se uma aplicação precisar de privilégios específicos (e.g., rodar como root, acessar volumes do host), pode ser necessário criar uma SCC customizada e associá-la à Service Account da aplicação via Role/RoleBinding.
+- **Configurações Controladas por SCCs:**
+    - `allowPrivilegedContainer`: Se pode rodar contêineres privilegiados.
+    - `allowPrivilegeEscalation`: Se pode escalar privilégios.
+    - `requiredDropCapabilities`, `defaultAddCapabilities`, `allowedCapabilities`: Controle de capabilities do Linux.
+    - `volumes`: Tipos de volumes permitidos (e.g., `hostPath`, `emptyDir`, `secret`).
+    - `runAsUser`: Estratégia para definir o UID do contêiner (`MustRunAs`, `MustRunAsRange`, `MustRunAsNonRoot`, `RunAsAny`). OpenShift geralmente usa `MustRunAsRange`.
+    - `seLinuxContext`: Estratégia para definir o contexto SELinux (`MustRunAs`, `RunAsAny`).
+    - `fsGroup`, `supplementalGroups`: Estratégias para GIDs.
+    - `readOnlyRootFilesystem`: Se o sistema de arquivos raiz deve ser somente leitura.
+    - `allowHostDirVolumePlugin`, `allowHostIPC`, `allowHostNetwork`, `allowHostPID`, `allowHostPorts`: Controle de acesso a recursos do host.
+
+- **Implicação para o Helm Chart:**
+    - Os templates do Helm chart (Deployments, StatefulSets, etc.) precisam definir `securityContext` para pods e contêineres que sejam compatíveis com a SCC alvo no OpenShift.
+    - Pode ser necessário definir `runAsUser`, `runAsGroup`, `fsGroup` para UIDs/GIDs não-root permitidos pela SCC do namespace.
+    - Evitar `privileged: true` e `hostPath` volumes se possível.
+    - Pode ser necessário incluir uma definição de SCC customizada no chart e/ou instruções sobre como associar a Service Account a uma SCC apropriada (`anyuid`, `nonroot`, ou customizada). O chart do CERN parece usar um `user_uid` configurável, indicando que eles lidam com isso.

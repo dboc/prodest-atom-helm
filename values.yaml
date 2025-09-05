@@ -8,7 +8,7 @@ general:
   # UID do usuário para execução dos contêineres
   # Escolha este valor com base no intervalo permitido do seu projeto OpenShift
   # (verifique a anotação openshift.io/sa.scc.uid-range)
-  user_uid: "1001490000"
+  user_uid: "1002150000"
 
   # Namespace para instalação (será substituído pelo namespace de lançamento)
   namespace: npr-prodest-pds
@@ -21,10 +21,10 @@ security:
   # ServiceAccount para os pods
   serviceAccount:
     # create: true
-    name: "archivematica"
+    name: "atom"
   serviceAccountAnyUID:
     # create: true
-    name: "anyuid"
+    name: "anyuid-atom"
   # # SecurityContextConstraints para OpenShift
   # scc:
   #   # Usar SCC existente ou criar uma personalizada
@@ -40,8 +40,7 @@ security:
 route:
   enabled: true
   tls: true
-  hostname: "archivematica.k8s-npr.es.gov.br"
-  ss_hostname: "archivematica-dash.k8s-npr.es.gov.br"
+  hostname: "atom.k8s-npr.es.gov.br"
 
 # global:
 #   domain: "k8s-npr.es.gov.br"
@@ -54,19 +53,29 @@ route:
 #                   Configurações AtoM application                             #
 ################################################################################
 atom:
-  replicas: 3
-
+  enabled: true
+  replicas: 1
   image:
     repository: "atom"
     pullPolicy: Always
     tag: "2.9.0"
-
   env:
-    developmentMode: "off"
-    elasticsearchHost: "elasticsearch.elastic.svc.cluster.local"
-    elasticsearchPort: "9200"
-    elasticsearchProtocol: "https"
-
+    # - name: ATOM_DEVELOPMENT_MODE
+    #   value: on"
+    # - name: NODE_ENV
+    #   value: development
+    - name: ATOM_ELASTICSEARCH_HOST
+      value: "10.242.94.10"
+    # - name: ATOM_MEMCACHED_HOST
+    #   value: memcached
+    # - name: ATOM_GEARMAND_HOST
+    #   value: gearmand
+    # - name: ATOM_MYSQL_DSN
+    #   value: mysql:host=percona;port=3306;dbname=atom;charset=utf8mb4
+    # - name: ATOM_MYSQL_USERNAME
+    #   value: atom
+    # - name: ATOM_MYSQL_PASSWORD
+    #   value: atom_12345
   resources:
     limits:
       cpu: 2000m
@@ -79,7 +88,8 @@ atom:
 #                   Configurações AtoM worker                                  #
 ################################################################################
 atomWorker:
-  replicas: 5
+  enabled: true
+  replicas: 1
 
   resources:
     limits:
@@ -94,6 +104,7 @@ atomWorker:
 ################################################################################
 
 nginx:
+  enabled: false
   replicas: 1
 
   resources:
@@ -112,11 +123,26 @@ nginx:
 ################################################################################
 
 mysql:
+  enabled: true
   replicas: 1
 
-  auth:
-    rootPassword: "secure-root-password-change-me"
-    password: "secure-atom-password-change-me"
+  image:
+    repository: percona #TODO: VERIFICAR PARA UTILIZAR O PERCONA:8.0
+    tag: "8"
+    pullPolicy: IfNotPresent
+  # auth:
+  #   rootPassword: "secure-root-password-change-me"
+  #   password: "secure-atom-password-change-me"
+
+  # Configurações do banco de dados
+  db:
+    #name: "archivematica_db"
+    user: "atom"
+    password: "atom_12345"
+    rootPassword: "root_password"
+
+  # URL de conexão para o Storage Service
+  ss_db_url: "mysql://archivematica:archivematica@archivematica-mysql:3306/SS"
 
   resources:
     limits:
@@ -128,7 +154,8 @@ mysql:
 
   persistence:
     enabled: true
-    size: 100Gi
+    size: 1Gi
+    accessMode: ReadWriteOnce
 
 
 ################################################################################
@@ -155,7 +182,7 @@ memcached:
 #                   Configurações Gearman                                      #
 ################################################################################
 
-gearman:
+gearmand:
   enabled: true
   replicas: 1
   resources:
@@ -165,7 +192,10 @@ gearman:
     requests:
       cpu: 500m
       memory: 512Mi
-
+  image:
+    repository: artefactual/gearmand
+    tag: "1.1.18-alpine"
+    pullPolicy: IfNotPresent
 
 # # Security context for production
 # securityContext:
@@ -217,39 +247,35 @@ gearman:
 ################################################################################
 #                     Configurações volumes compartilhados                     #
 ################################################################################
-shared_volumes:
+volumes:
   # Volume para dados do pipeline
-  pipeline_data:
+  uploads:
     enabled: true
-    size: 2Gi
-    storageClass: ""
+    size: 1Gi
+    #storageClass: ""
     accessMode: ReadWriteMany
+    #resourcePolicy: keep
 
   # Volume para dados de staging
-  staging_data:
+  cache:
     enabled: true
-    size: 2Gi
-    storageClass: ""
+    size: 1Gi
+    #storageClass: ""
     accessMode: ReadWriteMany
+    #resourcePolicy: keep
 
   # Volume para dados de localização
-  location_data:
+  composer:
     enabled: true
-    size: 2Gi
-    storageClass: ""
+    size: 1Gi
+    #storageClass: ""
     accessMode: ReadWriteMany
+    #resourcePolicy: keep
 
   # Volume para compartilhamento de transferência
-  transfer_share:
+  npm:
     enabled: true
-    size: 2Gi
-    storageClass: ""
+    size: 1Gi
+    #storageClass: ""
     accessMode: ReadWriteMany
-
-  # Volume para compartilhamento de armazenamento
-  storage_share:
-    enabled: true
-    size: 2Gi
-    storageClass: ""
-    accessMode: ReadWriteMany
-
+    #resourcePolicy: keep

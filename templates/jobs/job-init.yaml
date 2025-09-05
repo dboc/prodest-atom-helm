@@ -1,3 +1,4 @@
+{{/*
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -96,7 +97,7 @@ spec:
           image: {{ include "atom.image" . }}
           imagePullPolicy: {{ .Values.atom.image.pullPolicy }}
           command: ["/bin/sh"]
-          args: 
+          args:
             - -c
             - |
               npm install
@@ -130,3 +131,4 @@ spec:
         - name: cache
           persistentVolumeClaim:
             claimName: {{ include "atom.fullname" . }}-cache-pvc
+This is a Helm template comment and will not appear in the rendered YAML */}}

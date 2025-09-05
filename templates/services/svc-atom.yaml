@@ -1,0 +1,18 @@
+{{- if .Values.atom.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.fullname" . }}-atom
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "atom") | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    {{- include "atom.component.selectorLabels" (list . "atom") | nindent 4 }}
+{{- end }}

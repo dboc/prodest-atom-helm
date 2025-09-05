@@ -1,0 +1,17 @@
+{{- if .Values.gearmand.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.fullname" . }}-gearmand
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "gearmand") | nindent 4 }}
+spec:
+  ports:
+    - port: 4730
+      targetPort: 4730
+      protocol: TCP
+      name: gearmand
+  selector:
+    {{- include "atom.component.selectorLabels" (list . "gearmand") | nindent 4 }}
+{{- end }}

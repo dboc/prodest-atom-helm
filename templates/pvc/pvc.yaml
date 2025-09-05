@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "atom.fullname" . }}-uploads-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+{{- if .Values.volumes.uploads.resourcePolicy }}
+  annotations:
+    helm.sh/resource-policy: keep
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.volumes.uploads.accessMode | default "ReadWriteMany" }}
+  resources:
+    requests:
+      storage: {{ .Values.volumes.uploads.size | default "1Gi" }}
+  {{- if .Values.volumes.uploads.storageClass }}
+  storageClassName: {{ .Values.volumes.uploads.storageClass | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "atom.fullname" . }}-cache-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+{{- if .Values.volumes.cache.resourcePolicy }}
+  annotations:
+    helm.sh/resource-policy: keep
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.volumes.cache.accessMode | default "ReadWriteMany" }}
+  resources:
+    requests:
+      storage: {{ .Values.volumes.cache.size | default "1Gi" }}
+  {{- if .Values.volumes.cache.storageClass }}
+  storageClassName: {{ .Values.volumes.cache.storageClass | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "atom.fullname" . }}-composer-deps-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+{{- if .Values.volumes.composer.resourcePolicy }}
+  annotations:
+    helm.sh/resource-policy: keep
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.volumes.composer.accessMode | default "ReadWriteMany" }}
+  resources:
+    requests:
+      storage: {{ .Values.volumes.composer.size | default "1Gi" }}
+  {{- if .Values.volumes.composer.storageClass }}
+  storageClassName: {{ .Values.volumes.composer.storageClass | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "atom.fullname" . }}-npm-deps-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.labels" . | nindent 4 }}
+{{- if .Values.volumes.npm.resourcePolicy }}
+  annotations:
+    helm.sh/resource-policy: keep
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.volumes.npm.accessMode | default "ReadWriteMany" }}
+  resources:
+    requests:
+      storage: {{ .Values.volumes.npm.size | default "1Gi" }}
+  {{- if .Values.volumes.npm.storageClass }}
+  storageClassName: {{ .Values.volumes.npm.storageClass | quote }}
+  {{- end }}

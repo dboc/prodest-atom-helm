@@ -1,0 +1,18 @@
+{{- if .Values.redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.fullname" . }}-redis
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "redis") | nindent 4 }}
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
+  selector:
+    {{- include "atom.component.selectorLabels" (list . "redis") | nindent 4 }}
+  # clusterIP: None # Para StatefulSet
+{{- end }}

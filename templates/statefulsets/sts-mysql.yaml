@@ -1,0 +1,78 @@
+{{- if .Values.mysql.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet # Usar StatefulSet para banco de dados
+metadata:
+  name: {{ include "atom.fullname" . }}-mysql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "mysql") | nindent 4 }}
+spec:
+  serviceName: {{ include "atom.fullname" . }}-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "atom.component.selectorLabels" (list . "mysql") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "atom.component.selectorLabels" (list . "mysql") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "atom.serviceAccountName" . }}
+      containers:
+        - name: mysql
+          image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
+          imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "atom.fullname" . }}-mysql-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "atom.fullname" . }}-mysql-secrets
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "atom.fullname" . }}-mysql-secrets
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb-script
+              mountPath: /docker-entrypoint-initdb.d
+          # Liveness and Readiness probes são recomendadas para produção
+          # livenessProbe:
+          #   exec:
+          #     command: ["mysqladmin", "ping", "-h", "127.0.0.1"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          # readinessProbe:
+          #   exec:
+          #     command: ["mysql", "-h", "127.0.0.1", "-u", "root", "-p$MYSQL_ROOT_PASSWORD", "-e", "SELECT 1"]
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 2
+          #   timeoutSeconds: 1
+      volumes:
+        - name: mysql-initdb-script
+          configMap:
+            name: mysql-init-db
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-persistent-storage
+      spec:
+        accessModes: [ "{{ .Values.mysql.persistence.accessMode }}" ]
+        {{- if .Values.mysql.persistence.storageClass }}
+        storageClassName: "{{ .Values.mysql.persistence.storageClass }}"
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.mysql.persistence.size | quote }}
+{{- end }}
+

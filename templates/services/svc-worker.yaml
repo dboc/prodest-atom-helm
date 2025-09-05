@@ -1,0 +1,18 @@
+{{- if .Values.atomWorker.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atom.fullname" . }}-worker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "worker") | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    {{- include "atom.component.selectorLabels" (list . "worker") | nindent 4 }}
+{{- end }}

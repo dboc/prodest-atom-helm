@@ -27,7 +27,7 @@
    - Nginx ({{ .Values.nginx.replicaCount }} replicas)
    - MySQL/Percona ({{ .Values.mysql.replicaCount }} replicas)
    - Memcached ({{ .Values.memcached.replicaCount }} replicas)
-   - Gearman ({{ .Values.gearman.replicaCount }} replicas)
+   - gearmand ({{ .Values.gearmand.replicaCount }} replicas)
 
 7. External dependencies:
    - Elasticsearch: {{ .Values.atom.env.elasticsearchHost }}:{{ .Values.atom.env.elasticsearchPort }}

@@ -1,0 +1,55 @@
+{{- if .Values.memcached.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "atom.fullname" . }}-memcached
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "memcached") | nindent 4 }}
+spec:
+  replicas: {{ .Values.memcached.replicas }}
+  selector:
+    matchLabels:
+      {{- include "atom.component.selectorLabels" (list . "memcached") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "atom.component.labels" (list . "memcached") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "atom.serviceAccountName" . }}
+      securityContext:
+        fsGroup: {{ .Values.general.user_uid }}
+        runAsUser: {{ .Values.general.user_uid }}
+        runAsGroup: {{ .Values.general.user_uid }}
+      containers:
+        - name: memcached
+          image: "{{ .Values.memcached.image.repository }}:{{ .Values.memcached.image.tag }}"
+          imagePullPolicy: {{ .Values.memcached.image.pullPolicy }}
+          securityContext:
+            runAsUser: {{ .Values.general.user_uid }}
+            runAsGroup: {{ .Values.general.user_uid }}
+          command: ["memcached"]
+          args: ["-p", "11211", "-m", "128", "-u", "memcache"]
+          ports:
+            - name: memcached
+              containerPort: 11211
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: memcached
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            tcpSocket:
+              port: memcached
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          resources:
+            {{- toYaml .Values.memcached.resources | nindent 12 }}
+{{- end }}

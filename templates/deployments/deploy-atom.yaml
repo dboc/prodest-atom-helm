@@ -1,0 +1,131 @@
+{{- if .Values.atom.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "atom.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atom.component.labels" (list . "atom") | nindent 4 }}
+spec:
+  replicas: {{ .Values.atom.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "atom.component.selectorLabels" (list . "atom") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "atom.component.selectorLabels" (list . "atom") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "atom.serviceAccountName" . }}
+{{/**
+      # {{- if .Values.podSecurityContext.enabled }}
+      # securityContext:
+      #   {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      # {{- end }}
+*/}}
+      containers:
+        - name: atom
+          image: "{{ .Values.atom.image.repository }}:{{ .Values.atom.image.tag }}"
+          imagePullPolicy: {{ .Values.atom.image.pullPolicy }}
+          # command: ["docker/entrypoint.sh"]
+          # args: ["fpm"]
+          ports:
+            - name: php-fpm
+              containerPort: 9000
+              protocol: TCP
+          env:
+            {{- if .Values.memcached.enabled }}
+            - name: ATOM_MEMCACHED_HOST
+              value: {{ include "atom.fullname" . }}-memcached
+            {{- end }}
+            {{- if .Values.gearmand.enabled }}
+            - name: ATOM_GEARMAND_HOST
+              value: {{ include "atom.fullname" . }}-gearmand
+            {{- end }}
+            {{- if .Values.mysql.enabled }}
+            - name: ATOM_MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "atom.fullname" . }}-mysql-secrets
+                  key: ATOM_MYSQL_USERNAME
+            - name: ATOM_MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "atom.fullname" . }}-mysql-secrets
+                  key: ATOM_MYSQL_PASSWORD
+            - name: ATOM_MYSQL_DSN
+              secretKeyRef:
+                  name: {{ include "atom.fullname" . }}-mysql-secrets
+                  key: ATOM_MYSQL_DSN
+            {{- end }}
+            {{- if .Values.elasticsearch.enabled }}
+            - name: ATOM_ELASTICSEARCH_HOST
+              value: {{ include "atom.fullname" . }}-elasticsearch
+            {{- end }}
+            {{- toYaml .Values.atom.env | nindent 12 }}
+            {{- toYaml .Values.atom.env | nindent 12 }}
+{{/**
+          # {{- if .Values.atom.livenessProbe.enabled }}
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: php-fpm
+          #   initialDelaySeconds: {{ .Values.atom.livenessProbe.initialDelaySeconds }}
+          #   periodSeconds: {{ .Values.atom.livenessProbe.periodSeconds }}
+          #   timeoutSeconds: {{ .Values.atom.livenessProbe.timeoutSeconds }}
+          #   failureThreshold: {{ .Values.atom.livenessProbe.failureThreshold }}
+          #   successThreshold: {{ .Values.atom.livenessProbe.successThreshold }}
+          # {{- end }}
+          # {{- if .Values.atom.readinessProbe.enabled }}
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: php-fpm
+          #   initialDelaySeconds: {{ .Values.atom.readinessProbe.initialDelaySeconds }}
+          #   periodSeconds: {{ .Values.atom.readinessProbe.periodSeconds }}
+          #   timeoutSeconds: {{ .Values.atom.readinessProbe.timeoutSeconds }}
+          #   failureThreshold: {{ .Values.atom.readinessProbe.failureThreshold }}
+          #   successThreshold: {{ .Values.atom.readinessProbe.successThreshold }}
+          # {{- end }}
+*/}}
+          resources:
+            {{- toYaml .Values.atom.resources | nindent 12 }}
+          volumeMounts:
+            - name: uploads
+              mountPath: /atom/src/uploads
+            - name: cache
+              mountPath: /atom/src/cache
+            - name: composer-deps
+              mountPath: /atom/src/vendor/composer
+            - name: npm-deps
+              mountPath: /atom/src/node_modules
+{{/**
+          # {{- if .Values.securityContext.enabled }}
+          # securityContext:
+          #   {{- omit .Values.securityContext "enabled" | toYaml | nindent 12 }}
+          # {{- end }}
+*/}}
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-uploads-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-cache-pvc
+        - name: composer-deps
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-composer-deps-pvc
+        - name: npm_deps
+          persistentVolumeClaim:
+            claimName: {{ include "atom.fullname" . }}-npm-deps-pvc
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
