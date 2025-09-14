@@ -1,0 +1,1169 @@
+NAME: atom
+LAST DEPLOYED: Sun Sep 14 09:33:01 2025
+NAMESPACE: npr-prodest-pds-hom
+STATUS: pending-install
+REVISION: 1
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+atom:
+  enabled: true
+  env:
+  - name: ATOM_ELASTICSEARCH_HOST
+    value: 10.242.94.10
+  image:
+    pullPolicy: Always
+    repository: registry.prodest.es.gov.br/sgint/atom
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 100m
+      memory: 500Mi
+atomWorker:
+  enabled: true
+  env:
+  - name: ATOM_ELASTICSEARCH_HOST
+    value: 10.242.94.10
+  image:
+    pullPolicy: Always
+    repository: registry.prodest.es.gov.br/sgint/atom
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 500Mi
+elasticsearch:
+  enabled: false
+gearmand:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: artefactual/gearmand
+    tag: 1.1.18-alpine
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+general:
+  namespace: npr-prodest-pds
+  user_uid: "1002150000"
+memcached:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: memcached
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+mysql:
+  db:
+    password: atom_12345
+    rootPassword: root_password
+    user: atom
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: percona
+    tag: "8"
+  persistence:
+    accessMode: ReadWriteOnce
+    enabled: true
+    size: 1Gi
+  replicas: 1
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+nginx:
+  enabled: true
+  image:
+    pullPolicy: Always
+    repository: registry.prodest.es.gov.br/docker/nginxinc/nginx-unprivileged
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+route:
+  enabled: true
+  hostname: atom.k8s-npr.es.gov.br
+  tls: true
+security:
+  serviceAccount:
+    name: atom
+  serviceAccountAnyUID:
+    name: anyuid-atom
+volumes:
+  cache:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+  composer:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+  npm:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+  uploads:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+
+COMPUTED VALUES:
+atom:
+  enabled: true
+  env:
+  - name: ATOM_ELASTICSEARCH_HOST
+    value: 10.242.94.10
+  image:
+    pullPolicy: Always
+    repository: registry.prodest.es.gov.br/sgint/atom
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 100m
+      memory: 500Mi
+atomWorker:
+  enabled: true
+  env:
+  - name: ATOM_ELASTICSEARCH_HOST
+    value: 10.242.94.10
+  image:
+    pullPolicy: Always
+    repository: registry.prodest.es.gov.br/sgint/atom
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 500Mi
+elasticsearch:
+  enabled: false
+gearmand:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: artefactual/gearmand
+    tag: 1.1.18-alpine
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+general:
+  namespace: npr-prodest-pds
+  user_uid: "1002150000"
+memcached:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: memcached
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+mysql:
+  db:
+    password: atom_12345
+    rootPassword: root_password
+    user: atom
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: percona
+    tag: "8"
+  persistence:
+    accessMode: ReadWriteOnce
+    enabled: true
+    size: 1Gi
+  replicas: 1
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+nginx:
+  enabled: true
+  image:
+    pullPolicy: Always
+    repository: registry.prodest.es.gov.br/docker/nginxinc/nginx-unprivileged
+    tag: latest
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+route:
+  enabled: true
+  hostname: atom.k8s-npr.es.gov.br
+  tls: true
+security:
+  serviceAccount:
+    name: atom
+  serviceAccountAnyUID:
+    name: anyuid-atom
+volumes:
+  cache:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+  composer:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+  npm:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+  uploads:
+    accessMode: ReadWriteMany
+    enabled: true
+    size: 1Gi
+
+HOOKS:
+MANIFEST:
+---
+# Source: atom/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: atom
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: atom/templates/serviceaccount.yaml
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: anyuid-atom
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: atom/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: atom-mysql-secrets
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  # Senhas do MySQL (codificadas em Base64)
+  MYSQL_USER: "YXRvbQ=="
+  MYSQL_ROOT_PASSWORD: "cm9vdF9wYXNzd29yZA=="
+  MYSQL_PASSWORD: "YXRvbV8xMjM0NQ=="
+  ATOM_MYSQL_USERNAME: "YXRvbV8xMjM0NQ=="
+  ATOM_MYSQL_PASSWORD: "YXRvbV8xMjM0NQ=="
+  ATOM_MYSQL_DSN: "bXlzcWw6aG9zdD1hdG9tLW15c3FsO3BvcnQ9MzMwNjtkYm5hbWU9YXRvbTtjaGFyc2V0PXV0ZjhtYjQ="
+---
+# Source: atom/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atom-nginx-config
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nginx
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /dev/stderr warn;
+    pid /tmp/nginx.pid;
+
+    events {
+      worker_connections 1024;
+    }
+
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+      access_log /dev/stdout main;
+      sendfile on;
+      keepalive_timeout 65;
+      gzip on;
+
+      upstream atom {
+        server atom-atom:9000;
+      }
+
+      server {
+        listen 8080;
+        root /atom/src;
+        server_name _;
+        client_max_body_size 72M;
+
+        location / {
+          try_files $uri /index.php?$args;
+        }
+
+        location ~ /\. {
+          deny all;
+          return 404;
+        }
+
+        location ~* (\.yml|\.ini|\.tmpl)$ {
+          deny all;
+          return 404;
+        }
+
+        location ~* /(?:uploads|files)/.*\.php$ {
+          deny all;
+          return 404;
+        }
+
+        location ~* /uploads/r/(.*)/conf/ { }
+
+        location ~* ^/uploads/r/(.*)$ {
+          include /etc/nginx/fastcgi_params;
+          set $index /index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$index;
+          fastcgi_param SCRIPT_NAME $index;
+          fastcgi_pass atom;
+        }
+
+        location ~ ^/private/(.*)$ {
+          internal;
+          alias /atom/src/$1;
+        }
+
+        location ~ ^/(index|qubit_dev)\.php(/|$) {
+          include /etc/nginx/fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_split_path_info ^(.+\.php)(/.*)$;
+          fastcgi_pass atom;
+        }
+
+        location ~* \.php$ {
+          deny all;
+          return 404;
+        }
+      }
+    }
+---
+# Source: atom/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atom-mysql-config
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: mysql
+data:
+  mysqld.cnf: |
+    [mysqld]
+    default-storage-engine = InnoDB
+    collation-server = utf8mb4_unicode_ci
+    character-set-server = utf8mb4
+    max_allowed_packet = 128M
+    sql_mode = ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    optimizer_switch = block_nested_loop=off
+    innodb_buffer_pool_size = 512M
+    innodb_log_file_size = 64M
+    innodb_flush_log_at_trx_commit = 2
+    innodb_flush_method = O_DIRECT
+---
+# Source: atom/templates/pvc/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: atom-uploads-pvc
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: atom/templates/pvc/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: atom-cache-pvc
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: atom/templates/pvc/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: atom-composer-deps-pvc
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: atom/templates/pvc/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: atom-npm-deps-pvc
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: atom/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: anyuid-scc-binding-atom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: npr-prodest-pds-hom
+roleRef:
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: anyuid-atom
+  namespace: npr-prodest-pds-hom
+---
+# Source: atom/templates/services/svc-atom.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atom-atom
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: atom
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/component: atom
+---
+# Source: atom/templates/services/svc-gearman.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atom-gearmand
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: gearmand
+spec:
+  ports:
+    - port: 4730
+      targetPort: 4730
+      protocol: TCP
+      name: gearmand
+  selector:
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/component: gearmand
+---
+# Source: atom/templates/services/svc-memcached.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atom-memcached
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: memcached
+spec:
+  ports:
+    - port: 11211
+      targetPort: 11211
+      protocol: TCP
+      name: memcached
+  selector:
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/component: memcached
+---
+# Source: atom/templates/services/svc-mysql.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atom-mysql
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: mysql
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+      protocol: TCP
+      name: mysql
+  selector:
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/component: mysql
+---
+# Source: atom/templates/services/svc-nginx.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atom-nginx
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nginx
+spec:
+  ports:
+    - port: 8080
+      targetPort: 9000
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/component: nginx
+---
+# Source: atom/templates/services/svc-worker.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atom-worker
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: worker
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/component: worker
+---
+# Source: atom/templates/deployments/deploy-atom-worker.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atom-worker
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atom
+      app.kubernetes.io/instance: atom
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: atom
+        app.kubernetes.io/instance: atom
+        app.kubernetes.io/component: worker
+    spec:
+      serviceAccountName: anyuid-atom
+      containers:
+        - name: atom-worker
+          image: "registry.prodest.es.gov.br/sgint/atom:latest"
+          imagePullPolicy: Always
+          command: ["docker/entrypoint.sh"]
+          args: ["worker"]
+          env:
+            - name: ATOM_MEMCACHED_HOST
+              value: atom-memcached
+            - name: ATOM_GEARMAND_HOST
+              value: atom-gearmand
+            - name: ATOM_MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: ATOM_MYSQL_USERNAME
+            - name: ATOM_MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: ATOM_MYSQL_PASSWORD
+            - name: ATOM_MYSQL_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: ATOM_MYSQL_DSN
+            - name: ATOM_ELASTICSEARCH_HOST
+              value: 10.242.94.10
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+          volumeMounts:
+            - name: uploads
+              mountPath: /atom/src/uploads
+            - name: cache
+              mountPath: /atom/src/cache
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: atom-uploads-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: atom-cache-pvc
+        - name: composer-deps
+          persistentVolumeClaim:
+            claimName: atom-composer-deps-pvc
+      restartPolicy:
+---
+# Source: atom/templates/deployments/deploy-atom.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atom
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: atom
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atom
+      app.kubernetes.io/instance: atom
+      app.kubernetes.io/component: atom
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: atom
+        app.kubernetes.io/instance: atom
+        app.kubernetes.io/component: atom
+    spec:
+      serviceAccountName: anyuid-atom
+      containers:
+        - name: atom
+          image: "registry.prodest.es.gov.br/sgint/atom:latest"
+          imagePullPolicy: Always
+          # command: ["docker/entrypoint.sh"]
+          # args: ["fpm"]
+          ports:
+            - name: php-fpm
+              containerPort: 9000
+              protocol: TCP
+          env:
+            - name: ATOM_MEMCACHED_HOST
+              value: atom-memcached
+            - name: ATOM_GEARMAND_HOST
+              value: atom-gearmand
+            - name: ATOM_MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: ATOM_MYSQL_USERNAME
+            - name: ATOM_MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: ATOM_MYSQL_PASSWORD
+            - name: ATOM_MYSQL_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: ATOM_MYSQL_DSN
+            - name: ATOM_ELASTICSEARCH_HOST
+              value: 10.242.94.10
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+          volumeMounts:
+            - name: uploads
+              mountPath: /atom/src/uploads
+            - name: cache
+              mountPath: /atom/src/cache
+            - name: composer-deps
+              mountPath: /atom/src/vendor/composer
+            - name: npm-deps
+              mountPath: /atom/src/node_modules
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: atom-uploads-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: atom-cache-pvc
+        - name: composer-deps
+          persistentVolumeClaim:
+            claimName: atom-composer-deps-pvc
+        - name: npm-deps
+          persistentVolumeClaim:
+            claimName: atom-npm-deps-pvc
+---
+# Source: atom/templates/deployments/deploy-gearmand.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atom-gearmand
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: gearmand
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atom
+      app.kubernetes.io/instance: atom
+      app.kubernetes.io/component: gearmand
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: atom
+        app.kubernetes.io/instance: atom
+        app.kubernetes.io/component: gearmand
+    spec:
+      serviceAccountName: anyuid-atom
+      containers:
+        - name: gearmand
+          image: "artefactual/gearmand:1.1.18-alpine"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4730
+              name: gearmand
+          # env:
+          #   - name: GEARMAND_QUEUE_TYPE
+          #     value: 
+          #
+          # Liveness and Readiness probes são recomendadas
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 4730
+          #   initialDelaySeconds: 30
+          #   timeoutSeconds: 5
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 4730
+          #   initialDelaySeconds: 5
+          #   timeoutSeconds: 1
+---
+# Source: atom/templates/deployments/deploy-memcached.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atom-memcached
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: memcached
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atom
+      app.kubernetes.io/instance: atom
+      app.kubernetes.io/component: memcached
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: atom-0.1.0
+        app.kubernetes.io/name: atom
+        app.kubernetes.io/instance: atom
+        app.kubernetes.io/version: "2.9.0"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: memcached
+    spec:
+      serviceAccountName: atom
+      securityContext:
+        fsGroup: 1002150000
+        runAsUser: 1002150000
+        runAsGroup: 1002150000
+      containers:
+        - name: memcached
+          image: "memcached:latest"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1002150000
+            runAsGroup: 1002150000
+          command: ["memcached"]
+          args: ["-p", "11211", "-m", "128", "-u", "memcache"]
+          ports:
+            - name: memcached
+              containerPort: 11211
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: memcached
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            tcpSocket:
+              port: memcached
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+---
+# Source: atom/templates/deployments/deploy-nginx.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atom-nginx
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nginx
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atom
+      app.kubernetes.io/instance: atom
+      app.kubernetes.io/component: nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: atom
+        app.kubernetes.io/instance: atom
+        app.kubernetes.io/component: nginx
+    spec:
+      serviceAccountName: atom
+      containers:
+        - name: nginx
+          image: "registry.prodest.es.gov.br/docker/nginxinc/nginx-unprivileged:latest"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: uploads
+              mountPath: /atom/src/uploads
+              readOnly: true
+            - name: cache
+              mountPath: /atom/src/cache
+              readOnly: true
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: atom-nginx-config
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: atom-uploads-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: atom-cache-pvc
+---
+# Source: atom/templates/statefulsets/sts-mysql.yaml
+apiVersion: apps/v1
+kind: StatefulSet # Usar StatefulSet para banco de dados
+metadata:
+  name: atom-mysql
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: mysql
+spec:
+  serviceName: atom-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atom
+      app.kubernetes.io/instance: atom
+      app.kubernetes.io/component: mysql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: atom
+        app.kubernetes.io/instance: atom
+        app.kubernetes.io/component: mysql
+    spec:
+      serviceAccountName: atom
+      containers:
+        - name: mysql
+          image: "percona:8"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atom-mysql-secrets
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb-script
+              mountPath: /docker-entrypoint-initdb.d
+          # Liveness and Readiness probes são recomendadas para produção
+          # livenessProbe:
+          #   exec:
+          #     command: ["mysqladmin", "ping", "-h", "127.0.0.1"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          # readinessProbe:
+          #   exec:
+          #     command: ["mysql", "-h", "127.0.0.1", "-u", "root", "-p$MYSQL_ROOT_PASSWORD", "-e", "SELECT 1"]
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 2
+          #   timeoutSeconds: 1
+      volumes:
+        - name: mysql-initdb-script
+          configMap:
+            name: mysql-init-db
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-persistent-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: "1Gi"
+---
+# Source: atom/templates/ingress/route.yaml
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: atom-route
+  namespace: npr-prodest-pds-hom
+  labels:
+    helm.sh/chart: atom-0.1.0
+    app.kubernetes.io/name: atom
+    app.kubernetes.io/instance: atom
+    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: atom
+spec:
+  host: atom.k8s-npr.es.gov.br
+  to:
+    kind: Service
+    name: atom-atom
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    # Optional: specify insecureEdgeTerminationPolicy if needed
+    # insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+

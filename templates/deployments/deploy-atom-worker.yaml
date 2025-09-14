@@ -16,7 +16,7 @@ spec:
       labels:
         {{- include "atom.component.selectorLabels" (list . "worker") | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "atom.serviceAccountName" . }}
+      serviceAccountName: {{ .Values.security.serviceAccountAnyUID.name }}
       containers:
         - name: atom-worker
           image: "{{ .Values.atomWorker.image.repository }}:{{ .Values.atomWorker.image.tag }}"
@@ -44,15 +44,18 @@ spec:
                   name: {{ include "atom.fullname" . }}-mysql-secrets
                   key: ATOM_MYSQL_PASSWORD
             - name: ATOM_MYSQL_DSN
-              secretKeyRef:
+              valueFrom:
+                secretKeyRef:
                   name: {{ include "atom.fullname" . }}-mysql-secrets
                   key: ATOM_MYSQL_DSN
             {{- end }}
-            {{- if .Values.elasticsearch.enabled }}
+            {{- if and .Values.elasticsearch .Values.elasticsearch.enabled }}
             - name: ATOM_ELASTICSEARCH_HOST
               value: {{ include "atom.fullname" . }}-elasticsearch
             {{- end }}
-            {{- toYaml .Values.atom.env | nindent 12 }}
+            {{- if .Values.atomWorker.env }}
+            {{- toYaml .Values.atomWorker.env | nindent 12 }}
+            {{- end }}
           resources:
             {{- toYaml .Values.atomWorker.resources | nindent 12 }}
           volumeMounts:
